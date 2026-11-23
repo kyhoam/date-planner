@@ -108,6 +108,7 @@ button.primary { background: var(--green); border-color: var(--green); }
 </section>
 <section id="featuredPanel" hidden>
 <h2>近期特別活動</h2>
+<div id="eventFormats" class="quick actions" aria-label="節目類型"></div>
 <details id="eventFilters"><summary>篩選</summary>
 <form class="filters" id="filters">
 <label>類別<select name="category"><option value="">全部類別</option></select></label>
@@ -138,6 +139,7 @@ button.primary { background: var(--green); border-color: var(--green); }
 <details id="sources"><summary>活動來源</summary>
 <ul>
 <li><a href="https://www.discoverhongkong.com/tc/events.html" target="_blank" rel="noopener noreferrer">Discover Hong Kong 活動及節慶</a> · 冬日巡禮、節慶活動、場次同停演安排。</li>
+<li><a href="https://www.art-mate.net/" target="_blank" rel="noopener noreferrer">art-mate 香港節目</a> · 劇場、音樂、放映同社區工作坊。</li>
 <li><a href="https://data.gov.hk/tc-data/dataset/hk-lcsd-event-event-cultural" target="_blank" rel="noopener noreferrer">康文署文化節目</a> · 開放 XML，適合匯入節目、日期同場地。</li>
 <li><a href="https://www.museums.gov.hk/tc/web/portal/home.html" target="_blank" rel="noopener noreferrer">康文署博物館</a> · 免費開放日、限時展覽同放映。</li>
 <li><a href="https://app.taikwun.hk/en/whats-on/shows-and-programmes" target="_blank" rel="noopener noreferrer">大館節目表</a> · 留意戶外現場音樂、放映同特備節目。</li>
@@ -629,7 +631,61 @@ const holidayEvents = [
     note:'國際馬戲表演者逐個出場。正式對決喺元旦。',url:'https://www.taikwun.hk/en/whats-on/detail/ting-koo-ki-mad-skills-battle/1888'}
 ].map(item=>({kind:'event',category:categories[3],setting:'戶外',entry:'即場可去',cost:0,extra:0,verified:'2026-11-24',...item}));
 
-const publishedEvents = [...events,...holidayEvents];
+const performanceEvents = [
+  {key:'charlie-musical-2026',title:'《朱古力獎門人》百老匯音樂劇',district:'油尖旺',venue:'香港文化中心大劇院',format:'stage',highlight:true,level:'L2',minutes:145,cost:776,
+    ticketPrice:'平日兩人 HK$776 起 · 週末 HK$976 起',
+    windows:[['2026-11-24','2026-12-06','19:00','21:25',[2,3,4]],['2026-11-24','2026-12-06','19:30','21:55',[5,6]],['2026-11-24','2026-12-06','14:30','16:55',[6]],['2026-11-24','2026-12-06','11:30','13:55',[0]],['2026-11-24','2026-12-06','16:30','18:55',[0]]],
+    schedule:'至 12 月 6 日 · 平日夜場、週末兩場 · 逢星期一休演',
+    language:'英語演出 · 繁體中文字幕',
+    note:'舞台魔術同〈Pure Imagination〉係亮點。巡演用較多投影同 LED 布景。場次、實際票價同連位以售票頁為準。',
+    url:'https://charliemusicalhk.com/zh-hk',review:'https://www.broadwayworld.com/hong-kong/article/Review-CHARLIE-AND-THE-CHOCOLATE-FACTORY-at-Grand-Theatre-Hong-Kong-Cultural-Centre-20261105'},
+  {key:'wizard-of-oz-apa-2026',title:'演藝音樂劇《奧茲國的巫師》',district:'灣仔',venue:'香港演藝學院廖湯慧靄戲劇院',format:'stage',cost:300,language:'粵語演出',
+    windows:[['2026-11-25','2026-11-28','19:30','21:30'],['2026-11-28','2026-11-28','14:30','16:30']],schedule:'11 月 25–28 日 19:30 · 28 日另有 14:30',
+    note:'由演藝交響樂團現場伴奏，兩人票價按正價計。',url:'https://www.art-mate.net/doc/101940'},
+  {key:'pokfulam-drums-2026',title:'薄鳧林牧場《牧野鼓鳴》',district:'南區',venue:'薄鳧林牧場接待處集合',format:'music',setting:'戶外',cost:0,entry:'須登記',minutes:30,
+    slots:sessions([['2026-11-27','19:00','19:30'],['2026-11-29','15:30','16:00'],['2026-12-06','14:30','15:00']]),schedule:'11 月 27 日 19:00、29 日 15:30 · 12 月 6 日 14:30',
+    note:'喺歷史建築群聽大太鼓同敲擊樂，不設劃位。',url:'https://www.art-mate.net/doc/102091'},
+  {key:'pokfulam-lantern-2026',title:'薄鳧林嘜仔燈籠工作坊',district:'南區',venue:'薄鳧林牧場活動室',format:'workshop',category:categories[5],cost:0,deposit:100,minutes:60,
+    slots:sessions([['2026-11-28','16:30','17:30']]),schedule:'11 月 28 日 · 16:30–17:30',
+    note:'用淡奶罐整村童玩具。出席後按金退回，付款手續費如有另計。',url:'https://www.art-mate.net/doc/102100'},
+  {key:'pokfulam-botanical-print-2026',title:'薄鳧林植物敲拓年曆工作坊',district:'南區',venue:'薄鳧林牧場接待處集合',format:'workshop',category:categories[5],cost:0,deposit:100,minutes:60,
+    slots:sessions([['2026-12-04','14:30','15:30'],['2026-12-05','12:00','13:00']]),schedule:'12 月 4 日 14:30 或 5 日 12:00',
+    note:'用葉同花瓣敲印 2027 年曆。出席後按金退回，付款手續費如有另計。',url:'https://www.art-mate.net/doc/102101'},
+  {key:'fiba-village-2026',title:'維園 FIBA 三人籃球嘉年華',district:'灣仔',venue:'維多利亞公園 1–3 號足球場',format:['play','festival'],category:categories[4],setting:'戶外',cost:0,entry:'即場可去',
+    start:'2026-11-27T00:00:00+08:00',end:'2026-11-30T00:00:00+08:00',schedule:'11 月 27–29 日 · 即日開放時間睇官網',
+    note:'嘉年華免費。11 月 28–29 日正賽另購票，兩人由 HK$40 起。',url:'https://www.discoverhongkong.com/tc/events/event.id91423.fiba-3x3%E4%B8%96%E7%95%8C%E5%B7%A1%E8%BF%B4%E8%B3%BD-%E9%A6%99%E6%B8%AF%E5%A4%A7%E5%B8%AB%E8%B3%BD2026.html'},
+  {key:'cantopop-acappella-2026',title:'《廣東歌：無伴奏》音樂會',district:'油尖旺',venue:'柏斯音樂廳',format:'music',cost:360,minutes:120,language:'粵語演出',
+    slots:sessions([['2026-12-11','19:00','21:00']]),schedule:'12 月 11 日 · 19:00–21:00',
+    note:'The Kickvoxers 同 FOCUS 用人聲演繹爵士、R&B 同 City Pop 風格嘅廣東歌，不設劃位。',url:'https://www.art-mate.net/doc/102233'},
+  {key:'painted-faces-archive-2026',title:'電影資料館《七小福》',district:'東區',venue:'西灣河香港電影資料館電影院',format:'film',cost:80,language:'粵語 · 中英文字幕',
+    slots:sessions([['2026-12-04','11:00','13:00']]),schedule:'12 月 4 日 · 11:00',
+    url:'https://www.filmarchive.gov.hk/en/web/hkfa/pe-calendar-12.html'},
+  {key:'vampires-kiss-mplus-2026',title:'M+ 大台階《衰鬼愛人》',district:'油尖旺',venue:'西九 M+ 大台階',format:'film',cost:170,minutes:104,language:'英語 · 中文字幕',
+    slots:sessions([['2026-12-11','19:30','21:14']]),schedule:'12 月 11 日 · 19:30',
+    note:'Nicolas Cage 主演嘅黑色喜劇。',url:'https://www.mplus.org.hk/en/cinema/stair-in-the-dark-laughing-matters/vampires-kiss/'},
+  {key:'durian-durian-mplus-2026',title:'M+《榴槤飄飄》修復版',district:'油尖旺',venue:'西九 M+ 戲院一院',format:'film',cost:170,minutes:116,language:'多種語言 · 中英文字幕',
+    slots:sessions([['2026-12-19','17:45','19:41'],['2026-12-27','14:30','16:26']]),schedule:'12 月 19 日 17:45 或 27 日 14:30',
+    note:'19 日可以早啲到，16:15 有免費電影修復講座。',url:'https://www.mplus.org.hk/en/cinema/mplus-restored-festival-2026/durian-durian/'}
+].map(item=>({kind:'event',category:categories[3],setting:'室內',entry:'須預約',extra:0,verified:'2026-11-24',...item}));
+
+const formats = {
+  film:'電影・放映',stage:'音樂劇・舞台',music:'現場音樂',
+  workshop:'動手整嘢',play:'一齊玩',festival:'市集・節慶'
+};
+const existingFormats = {
+  'arts-parade-2026':'festival','detour-2026':'festival','maritime-2026':'festival',
+  'sai-ying-pun-sound-2026':'workshop','tai-kwun-steppes-2026':'music',
+  'winterfest-central-2026':'festival','winterfest-tst-2026':'festival','winterfest-cwb-2026':'festival',
+  'penpen-festa-2026':'festival','tai-kwun-vsing-2026':'music','discovery-bay-xmas-market-2026':'festival',
+  'bpe-evening-2026':'festival','weweave-voices-2026':'music','tai-kwun-moon-2026':'stage',
+  'mplus-restoration-talk-2026':'film','hkcc-dance-2026':'stage','tai-kwun-circus-gala-2026':'stage'
+};
+const publishedEvents = [...events,...holidayEvents,...performanceEvents];
+let eventFormat = '';
+function formatsOf(item) {
+  return [item.format || existingFormats[item.key] || (item.category===categories[5]?'workshop':
+    item.category===categories[4]?'play':null)].flat().filter(Boolean);
+}
 const slotsByItem = new WeakMap();
 function eventSlots(item) {
   if (item.slots) return item.slots;
@@ -718,7 +774,11 @@ function card(item, context, photo = false) {
   const extra = item.extra==null?'額外開支另查':item.extra>0?'額外 HK$'+item.extra:'';
   const terms = [entry,extra].filter(Boolean).join(' · ');
   if (terms) cost.append(node('small',' · '+terms));
+  if (item.highlight) section.append(node('span','特別安排','chip'));
+  if (item.ticketPrice) cost.firstChild.textContent=item.ticketPrice;
   section.append(heading,cost);
+  if (item.deposit) section.append(node('p','兩人先付可退按金 HK$'+item.deposit,'meta'));
+  if (item.language) section.append(node('p',item.language,'meta'));
   if (timing!=='日期自選') section.append(node('p',timing,'meta'));
   if (item.note) section.append(node('p',item.note));
   if (item.mainKey && Array.isArray(item.addons)) {
@@ -738,6 +798,10 @@ function card(item, context, photo = false) {
   const actions = node('div','','actions');
   if (typeof item.url==='string' && /^https?:\/\//i.test(item.url)) {
     const link=node('a',item.demo?'參考活動':'官方詳情'); link.href=item.url; link.target='_blank'; link.rel='noopener noreferrer'; actions.append(link);
+  }
+  if (typeof item.review==='string' && /^https?:\/\//i.test(item.review)) {
+    const link = node('a','睇劇評');
+    link.href=item.review;link.target='_blank';link.rel='noopener noreferrer';actions.append(link);
   }
   if (context==='browse') {
     const selected = pendingAddons.get(item.key) || new Set();
@@ -809,7 +873,7 @@ function matchesFeatured(item, f = new FormData(el('filters'))) {
   const endDay = hkDate.format(Date.now()+(Number(f.get('when'))-1)*86400000);
   const budget = f.get('budget'), district = f.get('district'), entry = f.get('entry');
   const category = f.get('category'), duration = f.get('duration'), setting = f.get('setting');
-  return availableBefore(item,endDay) &&
+  return availableBefore(item,endDay) && (!eventFormat || formatsOf(item).includes(eventFormat)) &&
     (!district || item.district===district) && (!entry || item.entry===entry) &&
     (!category || item.category===category) &&
     (!duration || (item.minutes && item.minutes<=Number(duration))) &&
@@ -818,7 +882,9 @@ function matchesFeatured(item, f = new FormData(el('filters'))) {
 }
 function filtered() {
   const filters = new FormData(el('filters'));
-  return [...publishedEvents,...ideas.filter(item=>item.months),...manual].filter(item=>matchesFeatured(item,filters));
+  return [...publishedEvents,...ideas.filter(item=>item.months),...manual]
+    .filter(item=>matchesFeatured(item,filters))
+    .sort((a,b)=>Number(Boolean(b.highlight))-Number(Boolean(a.highlight)));
 }
 function canDraw(item) {
   const record = list?.history?.find(entry => entry.item.key===item.key);
@@ -896,6 +962,15 @@ function draw(items) {
   if (!el('pick').open) el('pick').showModal();
 }
 el('filters').onchange=render;
+for (const [value,label] of [['','全部'],...Object.entries(formats)]) {
+  const control = btn(label,()=>{
+    eventFormat=value;
+    for (const option of el('eventFormats').children) option.setAttribute('aria-pressed',String(option===control));
+    renderFeatured(true);
+  });
+  control.setAttribute('aria-pressed',String(value===eventFormat));
+  el('eventFormats').append(control);
+}
 el('nav').onclick=async()=>{
   mode=mode==='list'?'browse':'list';
   render();
